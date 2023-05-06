@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/utils/firebase";
+import Link from "next/link";
 import {
   MagnifyingGlassIcon,
   UserIcon,
@@ -11,12 +14,20 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker } from "react-date-range";
 import { useRouter } from "next/router";
 
+import Log from "./Log";
+
 function Header({ placeholder }) {
   const [searchInput, setSearchInput] = useState("");
   const [startDate, setStartDay] = useState(new Date());
   const [endDate, setEndDay] = useState(new Date());
   const [noOfGuests, setNoOfGuests] = useState(1);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
+
+  const [toggleMenu, setToggleMenu] = useState(false);
+
+  //modal window
+  const [modalActive, setModalActive] = useState(false);
 
   const selectionRange = {
     startDate: startDate,
@@ -46,6 +57,7 @@ function Header({ placeholder }) {
     });
     setSearchInput("");
   };
+
   return (
     <header className="sticky t-0 z-50 grid grid-cols-3 bg-white shadow-md px-5 md:px-10 py-5">
       {/* left */}
@@ -58,11 +70,6 @@ function Header({ placeholder }) {
           src="/logo.png"
           className="object-contain object-left flex "
         />
-        {/* <Image
-          fill
-          src="/logo-sm.png"
-          className="object-contain object-left sm:hidden flex"
-        /> */}
       </div>
       {/* middle - SEARCH */}
       <div className="flex flex-row items-center md:border-2 rounded-full py-2 shadow-sm">
@@ -78,13 +85,53 @@ function Header({ placeholder }) {
       </div>
 
       {/* right */}
-      <div className="flex items-center space-x-6 justify-end text-gray-500">
-        <p className="hidden md:inline cursor-pointer">Become a host</p>
-        <GlobeAltIcon className="h-6 cursor-pointer hover:bg-slate-400 rounded-full" />
-        <div className="flex space-x-3 items-center border-2 p-2 rounded-full hover:shadow-md">
-          <Bars2Icon className="h-6" />
-          <UserIcon className="h-6" />
+      <div className="flex items-center space-x-4 justify-end text-gray-500">
+        <p className="hidden md:inline cursor-pointer hover:bg-slate-100 rounded-full py-[10px] px-[12px]">
+          Become a host
+        </p>
+        <div className="py-[10px] px-[10px] rounded-full  hover:bg-slate-100">
+          <GlobeAltIcon className="h-6 cursor-pointer rounded-full" />
         </div>
+        {/* menu */}
+
+        {!user && (
+          <div className="relative">
+            <div
+              className="flex space-x-3 items-center border-2 p-2 rounded-full hover:shadow-md relative"
+              onClick={() => setToggleMenu(!toggleMenu)}
+            >
+              <Bars2Icon className="h-6" />
+              <UserIcon className="h-6" />
+            </div>
+            {toggleMenu && (
+              <div
+                className="absolute top-14 right-0 bg-white w-[150px] md:w-[200px]  py-2 border rounded-lg shadow-lg"
+                onClick={() => {
+                  setModalActive(true);
+                }}
+              >
+                <p className="w-full block hover:bg-gray-100 px-4 py-2 rounded-lg font-semibold">
+                  Sign up
+                </p>
+                <p className="w-full block hover:bg-gray-100 px-4 py-2 rounded-lg">
+                  Log in
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+        {user && (
+          <div className="rounded-full h-12 w-12 shadow-md bg-gradient-to-r from-transparent to-pink-100">
+            <Link href={"/dashboard"}>
+              <img
+                src={user.photoURL ? user.photoURL : "avatar.png"}
+                alt="avatar"
+                className="w-full h-full object-fill rounded-full bg-contain"
+              />
+              <p></p>
+            </Link>
+          </div>
+        )}
       </div>
       {searchInput && (
         <div className="flex flex-col col-span-3 mx-auto">
@@ -117,6 +164,11 @@ function Header({ placeholder }) {
           </div>
         </div>
       )}
+      <Log
+        active={modalActive}
+        setActive={setModalActive}
+        setToggleMenu={setToggleMenu}
+      />
     </header>
   );
 }
