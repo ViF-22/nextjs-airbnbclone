@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 function Banner() {
   const router = useRouter();
   return (
-    <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] ">
+    <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[600px] mb-10 top-4">
       <Image src="/banner.jpg" fill className="object-cover object-center" />
       <div className="absolute flex flex-col w-full h-full justify-center items-center text-white">
         <p className="text-[1.2rem] sm:text-3xl pb-3 font-semibold">
