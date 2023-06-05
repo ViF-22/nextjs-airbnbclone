@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/utils/firebase";
@@ -58,8 +58,19 @@ function Header({ placeholder }) {
     setSearchInput("");
   };
 
+  //on hover logout
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseOver = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseOut = () => {
+    setIsHovering(false);
+  };
+
   return (
-    <header className="absolute w-full t-0 z-50 grid grid-cols-3  shadow-md px-3 md:px-10 py-5 bg-white ">
+    <header className="absolute w-full t-0 z-50 grid grid-cols-3  shadow-md px-3 md:px-10 py-5 bg-white">
       {/* left */}
       <div
         className="relative flex justify-center md:h-10 h-8 cursor-pointer my-auto "
@@ -117,7 +128,11 @@ function Header({ placeholder }) {
           </div>
         )}
         {user && (
-          <div className="rounded-full h-12 w-12 shadow-md bg-gradient-to-r from-transparent to-pink-100">
+          <div
+            className="relative rounded-full h-10 w-10 md:h-12 md:w-12 shadow-md bg-gradient-to-r from-transparent to-pink-100"
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseOut}
+          >
             <Link href={"/dashboard"}>
               <img
                 src={user.photoURL ? user.photoURL : "avatar.png"}
@@ -126,6 +141,23 @@ function Header({ placeholder }) {
               />
               <p></p>
             </Link>
+
+            {isHovering && (
+              <div className="absolute top-10 md:top-12 right-0 bg-white w-[150px] md:w-[200px]  py-2 border rounded-lg shadow-lg">
+                <Link
+                  href={"/dashboard"}
+                  className="w-full block hover:bg-gray-100 px-4 py-2 rounded-lg font-semibold"
+                >
+                  My Account
+                </Link>
+                <p
+                  className="w-full block hover:bg-gray-100 px-4 py-2 rounded-lg font-semibold cursor-pointer"
+                  onClick={() => auth.signOut()}
+                >
+                  Log out
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>

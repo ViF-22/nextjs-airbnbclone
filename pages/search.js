@@ -1,12 +1,19 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import InfoCard from "@/components/InfoCard";
+import { addToFav } from "@/features/favSlice";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
 import React from "react";
-
+import { useDispatch, useSelector } from "react-redux";
 
 function Search({ searchResults }) {
+  const favs = useSelector((state) => state.fav.favItems);
+  const dispatch = useDispatch();
+  // const handleAddToFav = (product) => {
+  //   dispatch(addToFav(product));
+  // };
+
   const router = useRouter();
   router.query; //object
   // Es6 destructuring
@@ -17,7 +24,7 @@ function Search({ searchResults }) {
   return (
     <div>
       <Header placeholder={`${location} | ${range} | ${noOfGuests} guests`} />
-      <main className="flex">
+      <main className="flex flex-col  md:pt-[90px] pt-[80px]">
         <section className="flex-grow pt-14 px-6">
           <p className="text-sm">
             3000+ stays {range} for {noOfGuests} guests
@@ -34,24 +41,23 @@ function Search({ searchResults }) {
             <p className="button">More Filters</p>
           </div>
           <div className="flex flex-col">
-            {searchResults.map(
-              ({ img, location, title, description, star, price, total }) => (
-                <InfoCard
-                  key={img}
-                  img={img}
-                  location={location}
-                  title={title}
-                  description={description}
-                  star={star}
-                  price={price}
-                  total={total}
-                />
-              )
-            )}
+            {searchResults.map((res) => (
+              <InfoCard
+                key={res.img}
+                img={res.img}
+                location={res.location}
+                title={res.title}
+                description={res.description}
+                star={res.star}
+                price={res.price}
+                total={res.total}
+                reducer={(res) => dispatch(addToFav(res))}
+                product={res}
+              />
+            ))}
           </div>
         </section>
-       
-
+        {/* card for favorites */}
       </main>
       <Footer />
     </div>
