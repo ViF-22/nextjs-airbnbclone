@@ -88,7 +88,7 @@ function Log({ active, setActive, setToggleMenu }) {
     <div
       className={
         active
-          ? `absolute w-full h-screen backdrop-blur-sm m-0 block overflow-hidden`
+          ? `absolute top-0 w-full h-screen backdrop-blur-sm m-0  overflow-hidden`
           : `hidden overflow-hidden`
       }
     >
@@ -181,8 +181,9 @@ function Log({ active, setActive, setToggleMenu }) {
         </p>
         <div className="flex flex-col gap-y-3 pt-3">
           <button
-            onClick={() => {
-              googleLogIn();
+            onClick={async () => {
+              await signInWithPopup(auth, googleProvider);
+              router.push("/dashboard");
             }}
             className="border-[1px] border-gray-600 rounded-lg flex items-center  justify-center py-3 px-5 hover:bg-slate-100"
           >
